@@ -1,0 +1,23 @@
+{
+  "name": "nightlife-coordination",
+  "version": "1.0.0",
+  "description": "FCC Full Stack App",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aball6412/nightlife-coordination.git"
+  },
+  "author": "Aaron Thompkins",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aball6412/nightlife-coordination/issues"
+  },
+  "homepage": "https://github.com/aball6412/nightlife-coordination#readme",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
