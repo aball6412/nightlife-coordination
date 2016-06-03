@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/aball6412/nightlife-coordination#readme",
   "dependencies": {
+    "ejs": "^2.4.2",
     "express": "^4.13.4"
   }
 }
