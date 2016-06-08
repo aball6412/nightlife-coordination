@@ -2,3 +2,17 @@ body {
     border: solid;
     margin: 50px;
 }
+
+.businesses {
+    border: solid;
+    height: 200px;
+    margin-bottom: 10px;
+}
+
+.bus_img {
+    border: solid;
+}
+
+.title {
+    border: solid;
+}

@@ -22,12 +22,8 @@
         
             $(document).ready(function() {
                 
- 
-                
                 //When the user searches....
                 $(".search").click(function() {
-                    
-                    var business;
                     
                     //Grab the query
                     var query = $(".query").val();
@@ -36,43 +32,16 @@
                     var data = {
                         query: query
                     }
-            
+                    
+                    console.log(data);
                     
                     //Send the query to our server
                     $.get("/searchapi", data, function(data) {
                         
-                        //Get the response from the server
-                        var business = data.business;
+                        console.log(data);
                         
-                        //Loop over list of business results and append it to current page
-                        for (var i in business) {
-                            
-                            $(".results").append(
-                                
-                                "<div class='media'>" + 
-
-                                "<div class='media-left'>" +
-                                    "<a href='#'>" +
-                                        "<img class='media-object' src='" + business[i].img + "'>" +
-                                    "</a>" +
-                                "</div> <!-- end media left -->" + 
-
-                                "<div class='media-body'>" +
-                                    "<h3 class='media-heading'>" + business[i].name + "</h3>" + 
-                                    "<p>" + business[i].preview + "</p>" + 
-                                "</div> <!-- end media body -->" +
-
-
-                                "</div> <!-- end media -->"
-   
-                            ); //End results.append
-                            
-                        }; //End for statement
                         
                     }); //End get
-                    
-                    
-                   
                     
                     
                 });
@@ -115,9 +84,25 @@
             
             <div class="results">
                 
-            
-                
-                
+                <% for (var i in business) { %>
+
+                    <div class="media">
+
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object" src="<%= business[i].img %>">
+                            </a>
+                        </div> <!-- end media left -->
+
+                        <div class="media-body">
+                            <h3 class="media-heading"><%= business[i].name %></h3>
+                            <p><%= business[i].preview %></p>
+                        </div> <!-- end media body -->
+
+
+                    </div> <!-- end media -->
+
+                <% } %>
 
             </div> <!-- end results -->
         
@@ -130,7 +115,5 @@
 
 
 </html>
-
-
 
 
