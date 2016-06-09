@@ -1,13 +1,34 @@
 var express = require("express");
 var app = express();
 var crypto = require("crypto");
-var http = require("http");
 var https = require("https");
+var mongodb = require("mongodb");
+var MongoClient = mongodb.MongoClient;
 
 
 
 //Set up port for production and development
 var port = process.env.PORT || 3000;
+
+
+//Set up MongoDB URL
+var dburl = process.env.MONGOLAB_URI || "mongodb://localhost:27017/nightlife-app";
+
+
+//Establish database connection
+MongoClient.connect(dburl, function(err, db) {
+    
+    if (err) {
+        
+        console.log("Could not connect to database");
+    }
+    
+    else {
+        console.log("Successfully connected to " + dburl);
+    }
+    
+    
+}); 
 
 
 //Serve static files

@@ -3,6 +3,14 @@ body {
     margin: 50px;
 }
 
+h3 {
+    display: inline;
+}
+
 .results {
     margin-top: 20px;
+}
+
+.button {
+    border: solid;
 }
