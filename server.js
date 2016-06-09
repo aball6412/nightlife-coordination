@@ -4,14 +4,14 @@ var crypto = require("crypto");
 var https = require("https");
 var mongodb = require("mongodb");
 var MongoClient = mongodb.MongoClient;
+var passport = require("passport");
+var Strategy = require("passport-twitter").Strategy;
+var bodyparser = require("body-parser");
+var cookieparser = require("cookie-parser");
 
 
-
-//Set up port for production and development
+//Set up port and database url for production and development
 var port = process.env.PORT || 3000;
-
-
-//Set up MongoDB URL
 var dburl = process.env.MONGOLAB_URI || "mongodb://localhost:27017/nightlife-app";
 
 
@@ -27,8 +27,55 @@ MongoClient.connect(dburl, function(err, db) {
         console.log("Successfully connected to " + dburl);
     }
     
+    //Set up db variables
+    
     
 }); 
+
+
+//Set up Passport Twitter Login Strategy
+//Will be re-using my Twitter Voting App credentials
+passport.use(new Strategy(
+    {
+        consumerKey: process.env.CONSUMER_KEY,
+        consumerSecret: process.env.CONSUMER_SECRET,
+        callbackURL: "http://localhost:3000/login/twitter/return"
+        
+    }, function(token, tokenSecret, profile, cb) {
+    
+        return cb(null, profile);
+    
+        
+}));
+
+
+
+//Serialize User
+//Which means we only save/remember a piece of the user profile and use that piece to reconstruct profile later
+passport.serializeUser(function(user, cb) {
+    cb(null, user.id);
+    console.log(user.id);
+});
+
+//Deserialize User
+//Here we take the part of profile that we remembered (userid usually) and search our database with it. 
+//Once we find a match then we can pull the rest of the profile from our database
+passport.deserializeUser(function(obj, cb) {
+    cb(null, obj); 
+});
+
+
+//Create all of the middleware needed for passport
+//app.use(require("morgan")("combined"));
+app.use(bodyparser.urlencoded({extended: false}));
+app.use(cookieparser());
+app.use(require("express-session")({ secret: "keyboard cat", resave: true, saveUninitialized: true }));
+
+//Initialize passport session
+app.use(passport.initialize());
+app.use(passport.session());
+
+ 
 
 
 //Serve static files
@@ -38,7 +85,6 @@ app.use("/", express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
 
-
 //Respond to homepage URL get requests.
 app.get("/", function(request, response) {
     
@@ -46,9 +92,12 @@ app.get("/", function(request, response) {
     
 });
 
+  
 
 
 app.get("/searchapi", function(request, response) {
+    
+    console.log(request.user);
     
     //Get the search query that the user entered
     var query = request.query.query;
@@ -176,4 +225,31 @@ app.get("/searchapi", function(request, response) {
 }); //End .get("/searchapi")
 
 
+
+app.get("/login/twitter", passport.authenticate("twitter"));
+
+app.get("/login/twitter/return", passport.authenticate("twitter", { failureRedirect: "/" }), function(request, response) { 
+    response.redirect("/"); 
+});
+
+app.get("/logout", function(request, response) {
+    
+    console.log("Logging out...");
+    request.logout();
+    response.redirect("/");
+    
+    
+});
+
+
 app.listen(port);
+
+
+
+
+
+
+
+
+
+
