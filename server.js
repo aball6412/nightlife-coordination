@@ -31,7 +31,7 @@ app.get("/searchapi", function(request, response) {
     
     //Get the search query that the user entered
     var query = request.query.query;
-    
+
     //If there isn't a search query redirect back to homepage
     if (query === undefined) {
         
@@ -62,7 +62,7 @@ app.get("/searchapi", function(request, response) {
 
         //Get the Yelp query variables that we will need
         //Run it through ecnodeURIComponent in order to account for URL spaces (ex: San Francisco, San Diego etc)
-        var location = encodeURIComponent("Charlotte, NC");
+        var location = encodeURIComponent(query);
         var term = encodeURIComponent("Night life");
 
 
@@ -140,7 +140,6 @@ app.get("/searchapi", function(request, response) {
                     display.push(data);
 
                 } //End for loop
-
 
                 response.send({ business: display });
 

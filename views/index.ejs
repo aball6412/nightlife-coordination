@@ -22,7 +22,8 @@
         
             $(document).ready(function() {
                 
- 
+                //Set counter to 0
+                var count = 0;
                 
                 //When the user searches....
                 $(".search").click(function() {
@@ -44,30 +45,73 @@
                         //Get the response from the server
                         var business = data.business;
                         
-                        //Loop over list of business results and append it to current page
-                        for (var i in business) {
+                        if (count === 0) {
                             
-                            $(".results").append(
-                                
-                                "<div class='media'>" + 
+                            //Loop over list of business results and append it to current page
+                            for (var i in business) {
 
-                                "<div class='media-left'>" +
-                                    "<a href='#'>" +
-                                        "<img class='media-object' src='" + business[i].img + "'>" +
-                                    "</a>" +
-                                "</div> <!-- end media left -->" + 
+                                $(".results").append(
 
-                                "<div class='media-body'>" +
-                                    "<h3 class='media-heading'>" + business[i].name + "</h3>" + 
-                                    "<p>" + business[i].preview + "</p>" + 
-                                "</div> <!-- end media body -->" +
+                                    "<div class='media'>" + 
+
+                                    "<div class='media-left'>" +
+                                        "<a href='#'>" +
+                                            "<img class='media-object' src='" + business[i].img + "'>" +
+                                        "</a>" +
+                                    "</div> <!-- end media left -->" + 
+
+                                    "<div class='media-body'>" +
+                                        "<h3 class='media-heading'>" + business[i].name + "</h3>" + 
+                                        "<button type='button' class='btn btn-primary'>0 Going</button>" + 
+                                        "<p>" + business[i].preview + "</p>" + 
+                                    "</div> <!-- end media body -->" +
 
 
-                                "</div> <!-- end media -->"
-   
-                            ); //End results.append
+                                    "</div> <!-- end media -->"
+
+                                ); //End results.append
+
+                                count++;
+
+                            }; //End for statement
                             
-                        }; //End for statement
+                        } //End if count > 0 statement
+                        
+                        else {
+                            
+                            //If this is the second search (count > 0) then clear current results
+                            $(".results").html("");
+                            
+                            //Then loop over list of business results and append it to current page
+                            for (var i in business) {
+
+                                $(".results").append(
+
+                                    "<div class='media'>" + 
+
+                                    "<div class='media-left'>" +
+                                        "<a href='#'>" +
+                                            "<img class='media-object' src='" + business[i].img + "'>" +
+                                        "</a>" +
+                                    "</div> <!-- end media left -->" + 
+
+                                    "<div class='media-body'>" +
+                                        "<h3 class='media-heading'>" + business[i].name + "</h3>" + 
+                                        "<button type='button' class='btn btn-primary'>0 Going</button>" + 
+                                        "<p>" + business[i].preview + "</p>" + 
+                                    "</div> <!-- end media body -->" +
+
+
+                                    "</div> <!-- end media -->"
+
+                                ); //End results.append
+
+                                count++;
+
+                            }; //End for statement
+                            
+                            
+                        } //End else statement
                         
                     }); //End get
                     
