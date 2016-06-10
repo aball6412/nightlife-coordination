@@ -22,8 +22,13 @@
         
             $(document).ready(function() {
                 
+                //Set counter to 1 since this page will only show if there was already a search done
+                var count = 1;
+                
                 //When the user searches....
                 $(".search").click(function() {
+                    
+                    var business;
                     
                     //Grab the query
                     var query = $(".query").val();
@@ -32,20 +37,96 @@
                     var data = {
                         query: query
                     }
-                    
-                    console.log(data);
+            
                     
                     //Send the query to our server
                     $.get("/searchapi", data, function(data) {
                         
-                        console.log(data);
+                        //Get the response from the server
+                        var business = data.business;
                         
+                        if (count === 0) {
+                            
+                            //Loop over list of business results and append it to current page
+                            for (var i in business) {
+
+                                $(".results").append(
+
+                                    "<div class='media'>" + 
+
+                                    "<div class='media-left'>" +
+                                        "<a href='#'>" +
+                                            "<img class='media-object' src='" + business[i].img + "'>" +
+                                        "</a>" +
+                                    "</div> <!-- end media left -->" + 
+
+                                    "<div class='media-body'>" +
+                                        "<h3 class='media-heading'>" + business[i].name + "</h3> " + 
+                                        "<button type='button' class='btn btn-primary btn-xs button'>0 Going</button>" + 
+                                        "<p>" + business[i].preview + "</p>" + 
+                                    "</div> <!-- end media body -->" +
+
+
+                                    "</div> <!-- end media -->"
+
+                                ); //End results.append
+
+                                count++;
+
+                            }; //End for statement
+                            
+                        } //End if count > 0 statement
+                        
+                        else {
+                            
+                            //If this is the second search (count > 0) then clear current results
+                            $(".results").html("");
+                            
+                            //Then loop over list of business results and append it to current page
+                            for (var i in business) {
+
+                                $(".results").append(
+
+                                    "<div class='media'>" + 
+
+                                    "<div class='media-left'>" +
+                                        "<a href='#'>" +
+                                            "<img class='media-object' src='" + business[i].img + "'>" +
+                                        "</a>" +
+                                    "</div> <!-- end media left -->" + 
+
+                                    "<div class='media-body'>" +
+                                        "<h3 class='media-heading'>" + business[i].name + "</h3> " + 
+                                        "<button type='button' class='btn btn-primary btn-xs button'>0 Going</button>" + 
+                                        "<p>" + business[i].preview + "</p>" + 
+                                    "</div> <!-- end media body -->" +
+
+
+                                    "</div> <!-- end media -->"
+
+                                ); //End results.append
+
+                                count++;
+
+                            }; //End for statement
+                            
+                            
+                        } //End else statement
                         
                     }); //End get
+                     
                     
+                }); //End $(".search").click()
+                
+                
+                $(".login").click(function() {
+                    
+                    //Grab the query
+                    var query = $(".query").val();
+                    
+                    window.location.href = "/login/twitter?query=" + query;
                     
                 });
-                
                 
                 
             }); //End document
@@ -70,7 +151,7 @@
                 <div class="col-lg-6">
                     
                     <div class="input-group">
-                        <input type="text" class="form-control query" placeholder="Search bars in your area">
+                        <input type="text" class="form-control query" placeholder="Perform Search" value="<%= query %>">
                         <span class="input-group-btn">
                             <button class="btn btn-default search" type="button">Search</button>
                         </span>

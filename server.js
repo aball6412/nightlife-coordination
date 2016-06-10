@@ -8,6 +8,7 @@ var passport = require("passport");
 var Strategy = require("passport-twitter").Strategy;
 var bodyparser = require("body-parser");
 var cookieparser = require("cookie-parser");
+var searchredirect = "";
 
 
 //Set up port and database url for production and development
@@ -42,7 +43,7 @@ passport.use(new Strategy(
         callbackURL: "http://localhost:3000/login/twitter/return"
         
     }, function(token, tokenSecret, profile, cb) {
-    
+        
         return cb(null, profile);
     
         
@@ -54,7 +55,6 @@ passport.use(new Strategy(
 //Which means we only save/remember a piece of the user profile and use that piece to reconstruct profile later
 passport.serializeUser(function(user, cb) {
     cb(null, user.id);
-    console.log(user.id);
 });
 
 //Deserialize User
@@ -97,10 +97,11 @@ app.get("/", function(request, response) {
 
 app.get("/searchapi", function(request, response) {
     
-    console.log(request.user);
     
     //Get the search query that the user entered
     var query = request.query.query;
+    //If user is coming back after authentication then repop will === "yes"
+    var repop = request.query.repop;
 
     //If there isn't a search query redirect back to homepage
     if (query === undefined) {
@@ -211,7 +212,14 @@ app.get("/searchapi", function(request, response) {
 
                 } //End for loop
 
-                response.send({ business: display });
+                //If user is coming back from authentication then serve page with search results
+                //Else just give data to client and jquery will dynamically display page on client side
+                if (repop) {
+                    response.render("search", { business: display, query: query });
+                }
+                else {
+                    response.send({ business: display });
+                }
 
             });
 
@@ -225,20 +233,44 @@ app.get("/searchapi", function(request, response) {
 }); //End .get("/searchapi")
 
 
+//app.get("/login/twitter", passport.authenticate("twitter"));
 
-app.get("/login/twitter", passport.authenticate("twitter"));
+
+app.get("/login/twitter", function(request, response) {
+    
+    //Get the user query and store it to a session variable
+    var userSearch = request.query.query;
+    request.session.query = userSearch;
+
+    passport.authenticate("twitter", { state: "hi world" })(request, response);
+    
+});
+    
+
 
 app.get("/login/twitter/return", passport.authenticate("twitter", { failureRedirect: "/" }), function(request, response) { 
-    response.redirect("/"); 
+    
+    //Retreive user query and redirect to the /searchapi to run search again before serving page back to user
+    var userSearch = request.session.query;
+    
+    if (userSearch) {
+        response.redirect("/searchapi?repop=yes&query=" + request.session.query); 
+    }
+    
+    else {
+        response.redirect("/");
+    }
+    
 });
+
+
 
 app.get("/logout", function(request, response) {
     
     console.log("Logging out...");
     request.logout();
     response.redirect("/");
-    
-    
+       
 });
 
 

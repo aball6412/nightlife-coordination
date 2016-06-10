@@ -114,13 +114,19 @@
                         } //End else statement
                         
                     }); //End get
+                     
                     
+                }); //End $(".search").click()
+                
+                
+                $(".login").click(function() {
                     
-                   
+                    //Grab the query
+                    var query = $(".query").val();
                     
+                    window.location.href = "/login/twitter?query=" + query;
                     
                 });
-                
                 
                 
             }); //End document
@@ -139,7 +145,7 @@
         <div class="container-fluid">
         
             <h1>Nightlife Coordination App</h1>
-            <p><a href="/login/twitter">Login With Twitter</a></p>
+            <p class="login"><a href="#">Login With Twitter</a></p>
             <p><a href="/logout">Logout</a></p>
             
             <div class="row">
