@@ -88,7 +88,16 @@ app.set("view engine", "ejs");
 //Respond to homepage URL get requests.
 app.get("/", function(request, response) {
     
-    response.render("index");
+    //If user is logged in then tell EJS "yes" else, "no"
+    if (request.user) { 
+        data = { login: "yes" }   
+    }
+    
+    else {
+        data = { login: "no" }
+    }
+    
+    response.render("index", data);
     
 });
 
@@ -215,7 +224,15 @@ app.get("/searchapi", function(request, response) {
                 //If user is coming back from authentication then serve page with search results
                 //Else just give data to client and jquery will dynamically display page on client side
                 if (repop) {
-                    response.render("search", { business: display, query: query });
+                    
+                    if (request.user) {
+                        var login = "yes";
+                    }
+                    else {
+                        login = "no";
+                    }
+                    
+                    response.render("search", { business: display, query: query, login: login });
                 }
                 else {
                     response.send({ business: display });

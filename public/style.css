@@ -7,10 +7,31 @@ h3 {
     display: inline;
 }
 
-.results {
+.heading {
+    border-bottom: solid;
+}
+
+.title {
+
+}
+
+.navlinks {
+
+}
+
+.login_out {
+
+    margin-top: 15px;
+}
+
+.login_out li {
+    margin-left: 200px;
+}
+
+.search_bar {
     margin-top: 20px;
 }
 
-.button {
-
+.results {
+    margin-top: 20px;
 }
