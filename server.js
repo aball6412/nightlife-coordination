@@ -10,8 +10,7 @@ var bodyparser = require("body-parser");
 var cookieparser = require("cookie-parser");
 var searchredirect = "";
 var user_collection;
-var name;
-var user_id;
+
 
 
 //Set up port and database url for production and development
@@ -92,9 +91,6 @@ passport.deserializeUser(function(obj, cb) {
         
         name = documents[0].name;
         user_id = documents[0].user_id;
-        
-        console.log(name);
-        console.log(user_id);
 
     });
     
@@ -247,8 +243,6 @@ app.get("/searchapi", function(request, response) {
                     var name = result.businesses[i].name;
                     var img = result.businesses[i].image_url;
                     var preview = result.businesses[i].snippet_text;
-                    
-                    console.log(bar_id);
 
                     var data = {
                         bar_id: bar_id,
@@ -297,15 +291,23 @@ app.get("/searchapi", function(request, response) {
 
 
 app.get("/barupdate", function(request, response) {
+
+    //Get the bar that user is going to and get user_id
+    var bar_id = request.query.bar_id;
+    var user_id = request.user;
+    console.log(bar_id);
+    console.log(request.user)
+
+    //RESPOND WITH HOW MANY PEOPLE ARE CURRENTLY GOING
+    response.send({ going: 1 });
     
-    if (user_id === undefined) { 
-        response.redirect("/");
-    }
-    else {
-       
-        response.send({ Name: name, ID: user_id });
-        
-    }
+    
+//    if (user_id === undefined) { 
+//        response.redirect("/");
+//    }
+//    else {
+//        response.send("Hello World");
+//    }
     
     
     

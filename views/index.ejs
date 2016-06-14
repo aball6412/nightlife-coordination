@@ -44,7 +44,6 @@
                         
                         //Get the response from the server
                         var business = data.business;
-                        
 
                         //Clear search just in case there is a previous previous search showing
                         $(".results").html("");
@@ -64,7 +63,7 @@
 
                                 "<div class='media-body'>" +
                                     "<h3 class='media-heading'>" + business[i].name + "</h3> " + 
-                                    "<button type='button' class='btn btn-primary btn-xs button'>0 Going</button>" + 
+                                    "<button data-internalid='" + business[i].bar_id + "'type='button' class='btn btn-primary btn-xs button'>0 Going</button>" + 
                                     "<p>" + business[i].preview + "</p>" + 
                                 "</div> <!-- end media body -->" +
 
@@ -87,12 +86,29 @@
                     //Grab the query
                     var query = $(".query").val();
                     
-                    
-                    
                     window.location.href = "/login/twitter?query=" + query;
                     
                 });
                 
+                
+                $(".results").on("click", ".button", function() {
+                    
+                    var bar_id = $(this)[0].dataset.internalid;
+                    var bar_button = this;
+                    
+                    
+                    $.get("/barupdate", { bar_id: bar_id }, function(data) {
+                    
+                        //If update is successful then change icon to showing 1 more person going                  
+                        var going = data.going;
+                        
+                        $(bar_button).html(going + " going");
+                           
+                    });
+                    
+                    
+ 
+                });
                 
             }); //End document
         
