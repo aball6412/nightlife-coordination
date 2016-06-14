@@ -99,10 +99,22 @@
                     
                     $.get("/barupdate", { bar_id: bar_id }, function(data) {
                     
-                        //If update is successful then change icon to showing 1 more person going                  
-                        var going = data.going;
+                        //If not logged in then redirect to login
+                        if (data.login === "no") {
+                            var query = $(".query").val();
+                            
+                            document.location.href = "/login/twitter?query=" + query;
+                        }
+                        else {
+                            
+                            //If update is successful then change icon to showing 1 more person going                  
+                            var going = data.going;
                         
-                        $(bar_button).html(going + " going");
+                            $(bar_button).html(going + " going");
+                            
+                        }
+                        
+                        
                            
                     });
                     

@@ -46,9 +46,6 @@ passport.use(new Strategy(
         
     }, function(token, tokenSecret, profile, cb) {
         
-        console.log(profile.id);
-        console.log(profile.displayName);
-        
         //Once user successfully logs on, query database to see if user already has profile
         //If they do not then create one
         
@@ -56,12 +53,10 @@ passport.use(new Strategy(
 
             if(err) throw err;
             
-            console.log(documents);
-            
             //If there are no results found then create new profile in database
             if(documents.length === 0) {
                 
-                user_collection.insert({ name: profile.displayName, user_id: profile.id });
+                user_collection.insert({ name: profile.displayName, user_id: profile.id, bars: [] });
                 
             }
             
@@ -295,19 +290,70 @@ app.get("/barupdate", function(request, response) {
     //Get the bar that user is going to and get user_id
     var bar_id = request.query.bar_id;
     var user_id = request.user;
-    console.log(bar_id);
-    console.log(request.user)
+    
+    //If bar_id or user_id is missing then take appropriate re-routing action
+    //Else if both variables are present then respond with how many people are going
+    if (bar_id && user_id === undefined) {
+        
+        console.log("Need to login");
+        response.send({ login: "no" });
+        
+    }
+    else if ( (bar_id === undefined && user_id === undefined) || (user_id && bar_id === undefined) ) {
+        response.redirect("/");
+    }
+    else {
+        
+        //Check to see if user is already going to a particular bar
+        user_collection.find({ user_id: user_id }).toArray(function(err, documents) {
+            if (err) throw err;
+            
+            var my_bars = documents[0].bars;
+            
+            //If user not going to any bars then add the bar they indicated
+            if (my_bars.length === 0) {
+                console.log("bars length");
+                user_collection.update( { user_id: user_id }, { $push: { bars: bar_id } } );
+            }
+            else {
+                
+                 //If user is going to some bars then make sure they aren't going to bar they just clicked on
+                var insert = true;
+                for (var i in my_bars) {
 
-    //RESPOND WITH HOW MANY PEOPLE ARE CURRENTLY GOING
-    response.send({ going: 1 });
-    
-    
-//    if (user_id === undefined) { 
-//        response.redirect("/");
-//    }
-//    else {
-//        response.send("Hello World");
-//    }
+                    if (my_bars[i] === bar_id) {
+                        insert = false;
+                        console.log("You're already going to that bar");
+                    }
+                }
+            
+                //If not going to bar they just clicked on then update DB to show that they now are
+                if (insert === true) {
+                    user_collection.update( { user_id: user_id }, { $push: { bars: bar_id } } );
+                }
+
+            }//End else
+            
+           
+
+            
+            
+            
+        });
+        
+        
+        
+        
+
+        
+        
+        //db.collection.find() bars with the bar_id
+        //If none exist then create a new bar document
+        //If one does exist see how many people are "going" to it
+        //RESPOND WITH HOW MANY PEOPLE ARE CURRENTLY GOING
+        response.send({ going: 1 });
+        
+    }
     
     
     
