@@ -9,6 +9,9 @@ var Strategy = require("passport-twitter").Strategy;
 var bodyparser = require("body-parser");
 var cookieparser = require("cookie-parser");
 var searchredirect = "";
+var user_collection;
+var name;
+var user_id;
 
 
 //Set up port and database url for production and development
@@ -29,7 +32,7 @@ MongoClient.connect(dburl, function(err, db) {
     }
     
     //Set up db variables
-    
+    user_collection = db.collection("user_collection");
     
 }); 
 
@@ -43,6 +46,28 @@ passport.use(new Strategy(
         callbackURL: "http://localhost:3000/login/twitter/return"
         
     }, function(token, tokenSecret, profile, cb) {
+        
+        console.log(profile.id);
+        console.log(profile.displayName);
+        
+        //Once user successfully logs on, query database to see if user already has profile
+        //If they do not then create one
+        
+        var user = user_collection.find({ user_id: profile.id }).toArray(function(err, documents) {
+
+            if(err) throw err;
+            
+            console.log(documents);
+            
+            //If there are no results found then create new profile in database
+            if(documents.length === 0) {
+                
+                user_collection.insert({ name: profile.displayName, user_id: profile.id });
+                
+            }
+            
+        }); //End database find query
+        
         
         return cb(null, profile);
     
@@ -61,6 +86,18 @@ passport.serializeUser(function(user, cb) {
 //Here we take the part of profile that we remembered (userid usually) and search our database with it. 
 //Once we find a match then we can pull the rest of the profile from our database
 passport.deserializeUser(function(obj, cb) {
+    
+    
+    user_collection.find({ user_id: obj }).toArray(function(err, documents) {
+        
+        name = documents[0].name;
+        user_id = documents[0].user_id;
+        
+        console.log(name);
+        console.log(user_id);
+
+    });
+    
     cb(null, obj); 
 });
 
@@ -201,17 +238,20 @@ app.get("/searchapi", function(request, response) {
 
                 //Once all of the data is in turn the string into JSON so we can work with it
                 var result = JSON.parse(str);
-
+                
                 var display = [];
                 for (var i in result.businesses) {
 
                     //Get out the variables that we need
+                    var bar_id = result.businesses[i].id;
                     var name = result.businesses[i].name;
                     var img = result.businesses[i].image_url;
                     var preview = result.businesses[i].snippet_text;
-
+                    
+                    console.log(bar_id);
 
                     var data = {
+                        bar_id: bar_id,
                         name: name,
                         img: img,
                         preview: preview
@@ -253,13 +293,35 @@ app.get("/searchapi", function(request, response) {
 //app.get("/login/twitter", passport.authenticate("twitter"));
 
 
+
+
+
+app.get("/barupdate", function(request, response) {
+    
+    if (user_id === undefined) { 
+        response.redirect("/");
+    }
+    else {
+       
+        response.send({ Name: name, ID: user_id });
+        
+    }
+    
+    
+    
+});
+
+
+
+
+
 app.get("/login/twitter", function(request, response) {
     
     //Get the user query and store it to a session variable
     var userSearch = request.query.query;
     request.session.query = userSearch;
 
-    passport.authenticate("twitter", { state: "hi world" })(request, response);
+    passport.authenticate("twitter")(request, response);
     
 });
     
