@@ -44,7 +44,7 @@
                         
                         //Get the response from the server
                         var business = data.business;
-
+                        console.log(business);
                         //Clear search just in case there is a previous previous search showing
                         $(".results").html("");
 
@@ -63,7 +63,7 @@
 
                                 "<div class='media-body'>" +
                                     "<h3 class='media-heading'>" + business[i].name + "</h3> " + 
-                                    "<button data-internalid='" + business[i].bar_id + "'type='button' class='btn btn-primary btn-xs button'>0 Going</button>" + 
+                                    "<button data-internalid='" + business[i].bar_id + "'type='button' class='btn btn-primary btn-xs button'>" + business[i].bar_going +  " Going</button>" + 
                                     "<p>" + business[i].preview + "</p>" + 
                                 "</div> <!-- end media body -->" +
 

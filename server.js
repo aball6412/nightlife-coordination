@@ -10,6 +10,7 @@ var bodyparser = require("body-parser");
 var cookieparser = require("cookie-parser");
 var searchredirect = "";
 var user_collection;
+var bar_collection;
 
 
 
@@ -32,6 +33,7 @@ MongoClient.connect(dburl, function(err, db) {
     
     //Set up db variables
     user_collection = db.collection("user_collection");
+    bar_collection = db.collection("bar_collection");
     
 }); 
 
@@ -227,49 +229,79 @@ app.get("/searchapi", function(request, response) {
 
             res.on("end", function() {
 
-                //Once all of the data is in turn the string into JSON so we can work with it
-                var result = JSON.parse(str);
-                
-                var display = [];
-                for (var i in result.businesses) {
+                bar_collection.find({}).toArray(function(err, documents) {
 
-                    //Get out the variables that we need
-                    var bar_id = result.businesses[i].id;
-                    var name = result.businesses[i].name;
-                    var img = result.businesses[i].image_url;
-                    var preview = result.businesses[i].snippet_text;
+                    //Once all of the data is in turn the string into JSON so we can work with it
+                    var result = JSON.parse(str);
 
-                    var data = {
-                        bar_id: bar_id,
-                        name: name,
-                        img: img,
-                        preview: preview
-                    }
+                    var display = [];
+                    for (var i in result.businesses) {
 
-                    display.push(data);
+                        //Get out the variables that we need
+                        var bar_id = result.businesses[i].id;
+                        var name = result.businesses[i].name;
+                        var img = result.businesses[i].image_url;
+                        var preview = result.businesses[i].snippet_text;
+                        var bar_going;
+                        
+                        //Check bar_id against database bars
+                        var match = 0;
+                        for (var j in documents) {
+                            
+                            if (documents[j].bar_id === bar_id) {
+                                bar_going = documents[j].going;
+                                match = 1;
+                            }
+                            
+                        }
+                        
+                        if (match === 0) {
+                            bar_going = 0;
+                        }
 
-                } //End for loop
+                        
+                        var data = {
+                            bar_id: bar_id,
+                            bar_going: bar_going,
+                            name: name,
+                            img: img,
+                            preview: preview
+                        }
 
-                //If user is coming back from authentication then serve page with search results
-                //Else just give data to client and jquery will dynamically display page on client side
-                if (repop) {
-                    
-                    if (request.user) {
-                        var login = "yes";
+
+                        display.push(data);
+
+                    } //End for loop
+
+
+                    //If user is coming back from authentication then serve page with search results
+                    //Else just give data to client and jquery will dynamically display page on client side
+                    if (repop) {
+
+                        if (request.user) {
+                            var login = "yes";
+                        }
+                        else {
+                            var login = "no";
+                        }
+
+                        response.render("search", { business: display, query: query, login: login });
                     }
                     else {
-                        login = "no";
+                        response.send({ business: display });
                     }
                     
-                    response.render("search", { business: display, query: query, login: login });
-                }
-                else {
-                    response.send({ business: display });
-                }
+                   
+                }); //End database query
+                    
 
-            });
+            }); //End res.on("end");
+                
 
-        }).end();
+                   
+                   
+
+        }).end(); //End http request
         
     } //End of else statement
 
@@ -290,6 +322,7 @@ app.get("/barupdate", function(request, response) {
     //Get the bar that user is going to and get user_id
     var bar_id = request.query.bar_id;
     var user_id = request.user;
+    var add_going = "no";
     
     //If bar_id or user_id is missing then take appropriate re-routing action
     //Else if both variables are present then respond with how many people are going
@@ -310,14 +343,14 @@ app.get("/barupdate", function(request, response) {
             
             var my_bars = documents[0].bars;
             
-            //If user not going to any bars then add the bar they indicated
+            //If user not going to any bars at all then add the bar they indicated
             if (my_bars.length === 0) {
-                console.log("bars length");
                 user_collection.update( { user_id: user_id }, { $push: { bars: bar_id } } );
+                add_going = "yes";
             }
             else {
                 
-                 //If user is going to some bars then make sure they aren't going to bar they just clicked on
+                //If user is going to some bars then make sure they aren't going to bar they just clicked on
                 var insert = true;
                 for (var i in my_bars) {
 
@@ -330,21 +363,39 @@ app.get("/barupdate", function(request, response) {
                 //If not going to bar they just clicked on then update DB to show that they now are
                 if (insert === true) {
                     user_collection.update( { user_id: user_id }, { $push: { bars: bar_id } } );
+                    add_going = "yes";
                 }
 
             }//End else
             
            
+        }); //End user_collection find query
+        
+        
+        bar_collection.find({ bar_id: bar_id }).toArray(function(err, documents) {
+            
+            if (err) throw err;
+            
+            if (documents.length === 0 && add_going === "yes") {
+                
+                console.log("updating bar collection");
+                bar_collection.insert({ bar_id: bar_id, going: 1 })
+                
+            }
+            
+            else if (documents.length > 0 && add_going === "yes") {
+                
+                console.log("Adding one more person as going");
+                bar_collection.update({ bar_id: bar_id }, { $inc: { going: 1 } })
+            
+            }
+                
+            //OUTPUT THE NUMBER OF PEOPLE GOING TO EACH BAR TO THE CLIENT SO THAT IT CAN DYNAMICALLY GENERATE THE NUMBERS ON THE SCREEN
 
-            
-            
             
         });
         
         
-        
-        
-
         
         
         //db.collection.find() bars with the bar_id
