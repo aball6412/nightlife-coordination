@@ -323,6 +323,7 @@ app.get("/barupdate", function(request, response) {
     var bar_id = request.query.bar_id;
     var user_id = request.user;
     var add_going = "no";
+    var going;
     
     //If bar_id or user_id is missing then take appropriate re-routing action
     //Else if both variables are present then respond with how many people are going
@@ -376,33 +377,35 @@ app.get("/barupdate", function(request, response) {
             
             if (err) throw err;
             
+            //If we don't have the bar in our database then add it's bar_id and have 1 person as going
             if (documents.length === 0 && add_going === "yes") {
                 
                 console.log("updating bar collection");
-                bar_collection.insert({ bar_id: bar_id, going: 1 })
+                bar_collection.insert({ bar_id: bar_id, going: 1 });
+                going = 1;
+                
+                //Respond with the new number of people going to the bar
+                response.send({ going: going });
                 
             }
             
+            //If we do have th bar already in the db then just increase the people going by 1
             else if (documents.length > 0 && add_going === "yes") {
                 
                 console.log("Adding one more person as going");
                 bar_collection.update({ bar_id: bar_id }, { $inc: { going: 1 } })
-            
+                going = documents[0].going + 1;
+                
+                //Respond with the new number of people going to the bar
+                response.send({ going: going });
+  
             }
                 
-            //OUTPUT THE NUMBER OF PEOPLE GOING TO EACH BAR TO THE CLIENT SO THAT IT CAN DYNAMICALLY GENERATE THE NUMBERS ON THE SCREEN
-
-            
-        });
+         
+        }); //End bar_collection.find()
         
         
         
-        
-        //db.collection.find() bars with the bar_id
-        //If none exist then create a new bar document
-        //If one does exist see how many people are "going" to it
-        //RESPOND WITH HOW MANY PEOPLE ARE CURRENTLY GOING
-        response.send({ going: 1 });
         
     }
     
