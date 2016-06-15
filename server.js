@@ -157,8 +157,8 @@ app.get("/searchapi", function(request, response) {
 
 
         //Get the Yelp API Authentication variables that we need
-        var oauth_consumer_key = "DFk5ftxDROCEzTzNLSPtyw";
-        var oauth_token = "0qWzH2Pok-nYFbWCMw2Tto_xII-YU4Rw";
+        var oauth_consumer_key = process.env.YELP_CONSUMER_KEY;
+        var oauth_token = process.env.YELP_TOKEN;
         var oauth_signature_method = "HMAC-SHA1";
         var oauth_timestamp = Math.floor(timestamp/1000);
         var oauth_version = "1.0";
@@ -167,8 +167,8 @@ app.get("/searchapi", function(request, response) {
         hash.update(String(oauth_timestamp));
         var oauth_nonce = hash.digest("hex");
 
-        var consumer_secret = "yQLBf5l4nFtqdUTvV-k3w_xtEV0";
-        var token_secret = "FzPWRb8iN_nLo3MljTv7zWMoEiQ";
+        var consumer_secret = process.env.YELP_CONSUMER_SECRET;
+        var token_secret = process.env.YELP_TOKEN_SECRET;
 
         //Get the Yelp query variables that we will need
         //Run it through ecnodeURIComponent in order to account for URL spaces (ex: San Francisco, San Diego etc)
