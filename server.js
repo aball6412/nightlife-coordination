@@ -323,6 +323,7 @@ app.get("/barupdate", function(request, response) {
     var bar_id = request.query.bar_id;
     var user_id = request.user;
     var add_going = "no";
+    var min_going = "no";
     var going;
     
     //If bar_id or user_id is missing then take appropriate re-routing action
@@ -357,7 +358,10 @@ app.get("/barupdate", function(request, response) {
 
                     if (my_bars[i] === bar_id) {
                         insert = false;
-                        console.log("You're already going to that bar");
+                        //REMOVE BAR FROM USER COLLECTION
+                        user_collection.update({ user_id: user_id }, { $pull: { bars: bar_id }})
+                        min_going = "yes";
+                        console.log("You are no longer going to this bar.");
                     }
                 }
             
@@ -393,12 +397,21 @@ app.get("/barupdate", function(request, response) {
             else if (documents.length > 0 && add_going === "yes") {
                 
                 console.log("Adding one more person as going");
-                bar_collection.update({ bar_id: bar_id }, { $inc: { going: 1 } })
+                bar_collection.update({ bar_id: bar_id }, { $inc: { going: 1 } });
                 going = documents[0].going + 1;
                 
                 //Respond with the new number of people going to the bar
                 response.send({ going: going });
   
+            }
+            
+            else if (documents.length > 0 && min_going === "yes") {
+                
+                bar_collection.update({ bar_id: bar_id }, {$inc: { going: -1 } });
+                going = documents[0].going - 1;
+                
+                //Respond with the new number of people going to the bar
+                response.send({ going: going });
             }
                 
          
