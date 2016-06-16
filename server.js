@@ -44,7 +44,9 @@ passport.use(new Strategy(
     {
         consumerKey: process.env.CONSUMER_KEY,
         consumerSecret: process.env.CONSUMER_SECRET,
-        callbackURL: "http://localhost:3000/login/twitter/return"
+        callbackURL: "https://nightlife-coord-app.herokuapp.com/login/twitter/return"
+        //Use below for development
+        //callbackURL: "http://localhost:3000/login/twitter/return"
         
     }, function(token, tokenSecret, profile, cb) {
         
