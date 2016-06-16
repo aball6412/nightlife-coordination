@@ -11,13 +11,13 @@ https://www.freecodecamp.com/challenges/build-a-nightlife-coordination-app
 
 # Skills Represented
 On the front-end we are utilizing:
-    HTML
-    JQuery
-    Bootstrap
-    Javascript
+    + HTML
+    + JQuery
+    + Bootstrap
+    + Javascript
     
 On the back-end we are using:
-    Node.js
-    Express
-    MongoDB
-    EJS (templating)
+    + Node.js
+    + Express
+    + MongoDB
+    + EJS (templating)
