@@ -52,7 +52,7 @@
                         for (var i in business) {
 
                             $(".results").append(
-
+                                
                                 "<div class='media'>" + 
 
                                 "<div class='media-left'>" +
@@ -64,11 +64,11 @@
                                 "<div class='media-body'>" +
                                     "<h3 class='media-heading'>" + business[i].name + "</h3> " + 
                                     "<button data-internalid='" + business[i].bar_id + "'type='button' class='btn btn-primary btn-xs button'>" + business[i].bar_going +  " Going</button>" + 
-                                    "<p>" + business[i].preview + "</p>" + 
+                                    "<p class='preview'>" + business[i].preview + "</p>" + 
                                 "</div> <!-- end media body -->" +
 
 
-                                "</div> <!-- end media -->"
+                                "</div> <!-- end media -->" 
 
                             ); //End results.append
 
@@ -79,6 +79,13 @@
                      
                     
                 }); //End $(".search").click()
+                
+                
+                $("form").on("submit", function(event) {
+                    event.preventDefault();
+                    $(".search").trigger("click");
+                });
+                
                 
                 
                 $(".login").click(function() {
@@ -159,12 +166,16 @@
             
                 <div class="col-lg-6">
                     
-                    <div class="input-group">
-                        <input type="text" class="form-control query" placeholder="Search bars in your area">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default search" type="button">Search</button>
-                        </span>
-                    </div> <!-- end input group -->
+                    <form class="search_form">
+                        
+                        <div class="input-group">
+                            <input type="text" class="form-control query" placeholder="Search bars in your area">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default search" type="button">Search</button>
+                            </span>
+                        </div> <!-- end input group -->
+                        
+                    </form>
     
                 </div> <!-- end col lg 6 --> 
                 
@@ -173,7 +184,7 @@
             
             
             <div class="results">
-                
+
             
             </div> <!-- end results -->
         

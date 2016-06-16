@@ -1,23 +1,15 @@
 body {
-    border: solid;
     margin: 50px;
+    background: #273b46;
+
 }
 
-h3 {
-    display: inline;
-}
 
 .heading {
+    color: #d9e4e9;
     border-bottom: solid;
 }
 
-.title {
-
-}
-
-.navlinks {
-
-}
 
 .login_out {
 
@@ -32,6 +24,48 @@ h3 {
     margin-top: 20px;
 }
 
-.results {
-    margin-top: 20px;
+input.query {
+    background: #e4ecef;
 }
+
+.results {
+
+    margin-top: 30px;
+}
+
+.media {
+    border-left: solid;
+    border-color: #52626b;
+    border-left-width: 5px;
+    padding: 10px;
+    margin: 25px;
+
+}
+
+h3 {
+    /*display: inline; */
+    color: #1793ce;
+}
+
+.button {
+    margin: 5px;
+}
+
+.preview {
+    color: #82acc6;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
